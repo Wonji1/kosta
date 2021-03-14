@@ -56,14 +56,12 @@ public class HeaderServlet extends HttpServlet {
             String jsonStr = mapper.writeValueAsString(jacksonMap2);
             out.print(jsonStr);
         } catch (FindException e) {
-            e.printStackTrace();
             Map<String, Object> jacksonMap = new HashMap<>();
             jacksonMap.put("status", -1);
             jacksonMap.put("msg", "로그인을 진행x");
             String jsonStr = mapper.writeValueAsString(jacksonMap);
             out.print(jsonStr);
         } catch (Exception e) {
-            e.printStackTrace();
             User user = null;
             try {
                 user = uService.findById(id);
@@ -71,6 +69,7 @@ public class HeaderServlet extends HttpServlet {
                 jacksonMap.put("user_id",user.getUser_id());
                 jacksonMap.put("user_nickname",user.getUser_nickname());
                 jacksonMap.put("user_email",user.getUser_email());
+                jacksonMap.put("user_adm",user.getUser_adm());
                 jacksonMap.put("status", -2);
                 jacksonMap.put("msg", e.getMessage()); // 정보가 없을 때
                 String jsonStr = mapper.writeValueAsString(jacksonMap);

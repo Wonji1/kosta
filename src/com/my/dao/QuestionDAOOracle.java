@@ -10,6 +10,7 @@ import com.my.vo.Question;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class QuestionDAOOracle implements QuestionDAO {
     @Override
@@ -293,6 +294,81 @@ public class QuestionDAOOracle implements QuestionDAO {
     }
 
     @Override
+    public void insertRandomQTmp(String user_id) throws AddException {
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            con = MyConnection.getConnection();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new AddException(e.getMessage());
+        }
+        String deleteByIdSQL = "DELETE FROM question_tmp WHERE user_id = ?";
+        String selectByIdSQL = "select * from (select q.question_id,q.correct_answer, count(*) cnt from question q left join question_solved qs on \n" +
+                "q.question_id = qs.question_id  and qs.user_id =? where substr(q.question_id,8,1) = ?  group by q.question_id,q.correct_answer order by cnt) where rownum <= 100";
+        String insertByIdSQL = "INSERT INTO question_tmp (question_id, user_id, question_answer) VALUES (?,?,?)";
+
+        Random rand = new Random();
+
+        int[] randomArr = new int[20];
+        for(int i=0;i<20;i++) {
+            //0~9 까지 난수 생성
+            int ran = rand.nextInt(100);
+            randomArr[i] = ran;
+            for(int j=0;j<i;j++){
+                if(randomArr[j] == ran){
+                    i--;
+                    break;
+                }
+            }
+        }
+        List<Question> tmpAll = new ArrayList<>();
+        try {
+            pstmt = con.prepareStatement(deleteByIdSQL);
+            pstmt.setString(1, user_id);
+            pstmt.executeUpdate();
+
+            pstmt = con.prepareStatement(selectByIdSQL);
+            for(int i =1;i<=5;i++) {
+                List<Question> all = new ArrayList<>();
+                pstmt.setString(1, user_id);
+                pstmt.setInt(2, i);
+                rs = pstmt.executeQuery();
+                while (rs.next()) {
+                    Question question = new Question();
+                    question.setQuestion_id(rs.getString("question_id"));
+                    question.setCorrect_answer(rs.getString("correct_answer"));
+                    all.add(question);
+                }
+                if (all.size() == 0) {
+                    throw new AddException("문제가 하나도 없습니다.");
+                }
+                for(int j=0;j<20;j++){
+                    tmpAll.add(all.get(randomArr[j]));
+                }
+            }
+            pstmt = con.prepareStatement(insertByIdSQL);
+            for (Question q : tmpAll) {
+                pstmt.setString(1, q.getQuestion_id());
+                pstmt.setString(2, user_id);
+                pstmt.setString(3, q.getCorrect_answer());
+
+                pstmt.addBatch();
+                pstmt.clearParameters();
+            }
+            pstmt.executeBatch();
+            pstmt.clearParameters();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new AddException(e.getMessage());
+        } finally {
+            MyConnection.close(con, pstmt, rs);
+        }
+    }
+
+    @Override
     public Question selectQTmpByQId(String user_id, String row_num) throws FindException {
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -305,29 +381,37 @@ public class QuestionDAOOracle implements QuestionDAO {
             throw new FindException(e.getMessage());
         }
 
-        String selectByIdSQL = "select B.rnum, B.* , (select count(*) from question_tmp where user_id= ?) cnt from\n" +
-                "    (select rownum as rnum, A.* from (\n" +
-                "        select q.* from question q join question_tmp qt on q.QUESTION_ID = qt.QUESTION_ID where qt.user_id = ? \n" +
-                "        order by qt.question_id) A where rownum <=?) B where B.rnum >= ?";
+//        String selectByIdSQL = "select * from (select B.rnum br, B.* , (select count(*) from question_tmp where user_id= ?) cnt from (select rownum as rnum, A.* from \n" +
+//                "(select q.* from question q join question_tmp qt on q.QUESTION_ID = qt.QUESTION_ID where qt.user_id = ? \n" +
+//                "order by substr(q.question_id,8,1)) A where rownum <=100) B where B.rnum <= ?) C where C.br>=?";
+        String selectByIdSQL = "select A.* , (select count(*) from question_tmp where user_id= ?) cnt from \n" +
+                "(select q.* from question q join question_tmp qt on q.QUESTION_ID = qt.QUESTION_ID where qt.user_id = ? and substr(q.question_id,8,1)= ?\n" +
+                ") A  order by question_id";
         try {
             pstmt = con.prepareStatement(selectByIdSQL);
-            pstmt.setString(1, user_id);
-            pstmt.setString(2, user_id);
-            pstmt.setString(3, row_num);
-            pstmt.setString(4, row_num);
-            rs = pstmt.executeQuery();
-            if (!rs.next()) {
-                throw new FindException("아이디에 해당하는 값이 없습니다.");
+            List<Question> all = new ArrayList<>();
+            for(int i =1; i<=5 ; i++) {
+                pstmt.setString(1, user_id);
+                pstmt.setString(2, user_id);
+                pstmt.setInt(3, i);
+                rs = pstmt.executeQuery();
+                while (rs.next()) {
+                    Question question = new Question();
+                    question.setQuestion_id(rs.getString("question_id"));
+                    question.setContent(rs.getString("content"));
+                    question.setCorrect_answer(rs.getString("correct_answer"));
+                    question.setExplanation(rs.getString("explanation"));
+                    question.setTotal_answer_count(Integer.parseInt(rs.getString("total_answer_count")));
+                    question.setCorrect_answer_count(Integer.parseInt(rs.getString("correct_answer_count")));
+                    question.setMn_total(Integer.parseInt(rs.getString("cnt")));
+                    all.add(question);
+                }
+                if (all.size() == 0) {
+                    throw new FindException("문제가 하나도 없습니다.");
+                }
             }
-            Question question = new Question();
-            question.setQuestion_id(rs.getString("question_id"));
-            question.setContent(rs.getString("content"));
-            question.setCorrect_answer(rs.getString("correct_answer"));
-            question.setExplanation(rs.getString("explanation"));
-            question.setTotal_answer_count(Integer.parseInt(rs.getString("total_answer_count")));
-            question.setCorrect_answer_count(Integer.parseInt(rs.getString("correct_answer_count")));
-            question.setMn_total(Integer.parseInt(rs.getString("cnt")));
-            return question;
+
+            return all.get(Integer.parseInt(row_num)-1);
         } catch (SQLException e) {
             e.printStackTrace();
             throw new FindException(e.getMessage());
@@ -347,7 +431,7 @@ public class QuestionDAOOracle implements QuestionDAO {
         }
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        String selectByIdSQL = "SELECT qt.question_answer,qt.question_id, q.total_answer_count, q.correct_answer_count FROM question_tmp qt join question q on qt.QUESTION_ID = q.question_id WHERE user_id= ? order by question_id";
+        String selectByIdSQL = "SELECT qt.question_answer,qt.question_id, q.total_answer_count, q.correct_answer_count FROM question_tmp qt join question q on qt.QUESTION_ID = q.question_id WHERE user_id= ? and substr(q.question_id,8,1)= ? order by question_id";
         String updateByIdSQL1 = "update question_tmp set QUESTION_OX=? where question_id = ? and user_id=?";
         String updateByIdSQL2 = "update question set total_answer_count = ?, correct_answer_count = ? where question_id = ?";
         String insertByIdSQL = " INSERT INTO question_solved (user_id, question_id, question_ox) VALUES (?,?,?)";
@@ -356,27 +440,30 @@ public class QuestionDAOOracle implements QuestionDAO {
         try {
             con.setAutoCommit(false);
             pstmt = con.prepareStatement(selectByIdSQL);
-            pstmt.setString(1, user_id);
-            rs = pstmt.executeQuery();
-            while (rs.next()) {
-                Question q = new Question();
-                q.setQuestion_id(rs.getString("question_id"));
-                q.setCorrect_answer(rs.getString("question_answer"));
-                q.setTotal_answer_count(rs.getInt("total_answer_count"));
-                q.setCorrect_answer_count(rs.getInt("correct_answer_count"));
-                qall.add(q);
-            }
-            if (qall.size() == 0) {
-                throw new ModifyException("문제가 하나도 없습니다.");
-            }
-            for (int i = 0; i < question_answer_list.length; i++) {
-                Question question = qall.get(i);
-                if (question_answer_list[i].equals(question.getCorrect_answer())) {
-                    question.setQuestion_ox(1);
-                } else {
-                    question.setQuestion_ox(0);
+            for (int j =1; j<=5;j++) {
+                pstmt.setString(1, user_id);
+                pstmt.setInt(2, j);
+                rs = pstmt.executeQuery();
+                while (rs.next()) {
+                    Question q = new Question();
+                    q.setQuestion_id(rs.getString("question_id"));
+                    q.setCorrect_answer(rs.getString("question_answer"));
+                    q.setTotal_answer_count(rs.getInt("total_answer_count"));
+                    q.setCorrect_answer_count(rs.getInt("correct_answer_count"));
+                    qall.add(q);
                 }
-                ox.add(question);
+                if (qall.size() == 0) {
+                    throw new ModifyException("문제가 하나도 없습니다.");
+                }
+                for (int i = 0; i < question_answer_list.length; i++) {
+                    Question question = qall.get(i);
+                    if (question_answer_list[i].equals(question.getCorrect_answer())) {
+                        question.setQuestion_ox(1);
+                    } else {
+                        question.setQuestion_ox(0);
+                    }
+                    ox.add(question);
+                }
             }
             pstmt = con.prepareStatement(updateByIdSQL1);
             for (Question q : ox) {

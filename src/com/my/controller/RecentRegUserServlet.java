@@ -26,7 +26,7 @@ public class RecentRegUserServlet extends HttpServlet {
         ObjectMapper mapper = new ObjectMapper();
         List<Map> jacksonList = new ArrayList<>();
         try {
-            List<User> userList = service.findNAllByN(10);
+            List<User> userList = service.findNAllByN(11);
             for(User user: userList){
                 Map<String, Object> jacksonMap = new HashMap<>();
                 jacksonMap.put("user_id", user.getUser_id());

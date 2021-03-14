@@ -18,6 +18,15 @@
           <element id="file-copy" path="$USER_HOME$/Desktop/자바library/mailapi.jar" />
           <element id="file-copy" path="$USER_HOME$/Desktop/자바library/자바library.zip" />
           <element id="file-copy" path="$USER_HOME$/Desktop/자바library/javax.mail-api-1.4.7.jar" />
+          <element id="file-copy" path="$USER_HOME$/Desktop/kosta/자바library/smtp.jar" />
+          <element id="file-copy" path="$USER_HOME$/Desktop/kosta/자바library/ojdbc6.jar" />
+          <element id="file-copy" path="$USER_HOME$/Desktop/kosta/자바library/mailapi.jar" />
+          <element id="file-copy" path="$USER_HOME$/Desktop/kosta/자바library/cos-05Nov2002.jar" />
+          <element id="file-copy" path="$USER_HOME$/Desktop/kosta/자바library/jquery-1.11.1.jar" />
+          <element id="file-copy" path="$USER_HOME$/Desktop/kosta/자바library/jackson-core-2.11.2.jar" />
+          <element id="file-copy" path="$USER_HOME$/Desktop/kosta/자바library/javax.mail-api-1.4.7.jar" />
+          <element id="file-copy" path="$USER_HOME$/Desktop/kosta/자바library/jackson-databind-2.11.2.jar" />
+          <element id="file-copy" path="$USER_HOME$/Desktop/kosta/자바library/jackson-annotations-2.11.2.jar" />
         </element>
       </element>
     </root>

@@ -4,6 +4,7 @@ import com.my.exception.AddException;
 import com.my.exception.FindException;
 import com.my.exception.ModifyException;
 import com.my.exception.RemoveException;
+import com.my.service.BoardService;
 import com.my.sql.MyConnection;
 import com.my.vo.*;
 
@@ -74,7 +75,7 @@ public class BoardDAOOracle implements BoardDAO{
             throw new FindException(e.getMessage());
         }
 
-        String selectByIdSQL = "select B.rnum, B.* , (select count(*) from qa) qa from\n" +
+        String selectByIdSQL = "select B.rnum, B.* , (select count(*) from board) qa from\n" +
                 "    (select rownum as rnum, A.* from (\n" +
                 "        select * from board b join users u on b.user_id = u.user_id \n" +
                 "        order by b.board_wdate desc ) A where rownum <=?) B where B.rnum >= ?";
@@ -210,21 +211,22 @@ public class BoardDAOOracle implements BoardDAO{
             pstmt.setString(2, user_id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new AddException(e.getMessage());
         } finally {
             MyConnection.close(con, pstmt);
         }
     }
 
     @Override
-    public void BoradUpDelete(String board_id) throws RemoveException {
+    public void BoradUpDelete(String board_id, String user_id) throws RemoveException {
         Connection con = null;
         PreparedStatement pstmt = null;
         try {
             con = MyConnection.getConnection();
-            String deleteSQL = "DELETE board_up WHERE board_id =?";
+            String deleteSQL = "DELETE board_up WHERE board_id =? AND user_id = ?";
             pstmt = con.prepareStatement(deleteSQL);
             pstmt.setString(1, board_id);
+            pstmt.setString(2, user_id);
             pstmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -457,6 +459,35 @@ public class BoardDAOOracle implements BoardDAO{
             }
         } finally {
             MyConnection.close(con, pstmt);
+        }
+    }
+
+    @Override
+    public void selectBoardUp(String user_id, String board_id) throws FindException {
+        Connection con =null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            con = MyConnection.getConnection();
+        } catch (Exception e) {
+            throw new FindException(e.getMessage());
+        }
+
+        String selectByIdSQL = "select * from board_up where user_id = ? and board_id = ?";
+        try {
+            pstmt = con.prepareStatement(selectByIdSQL);
+            pstmt.setString(1, user_id);
+            pstmt.setString(2, board_id);
+            rs = pstmt.executeQuery();
+            if(!rs.next()){
+                throw new FindException("아이디에 해당하는 값이 없습니다.");
+            }
+
+        } catch (SQLException e) {
+            throw  new FindException(e.getMessage());
+        }finally {
+            MyConnection.close(con,pstmt,rs);
         }
     }
 }

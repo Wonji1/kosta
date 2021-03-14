@@ -1,5 +1,7 @@
 package com.my.sql;
 
+import com.my.model.MyConfig;
+
 import java.sql.*;
 
 public class MyConnection {
@@ -15,7 +17,7 @@ public class MyConnection {
     public static Connection getConnection() throws Exception{
         String url = "jdbc:oracle:thin:@52.231.38.22:1521:xe";
         String user = "kosta";
-        String password = "kosta";
+        String password = new MyConfig().getDbPwd();
         Connection con = DriverManager.getConnection(url,user,password);
 
         return  con;

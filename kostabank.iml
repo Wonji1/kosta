@@ -27,11 +27,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="file://$USER_HOME$/Desktop/자바library" />
+          <root url="file://$USER_HOME$/Desktop/kosta/자바library" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
-        <jarDirectory url="file://$USER_HOME$/Desktop/자바library" recursive="false" />
+        <jarDirectory url="file://$USER_HOME$/Desktop/kosta/자바library" recursive="false" />
       </library>
     </orderEntry>
   </component>

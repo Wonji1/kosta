@@ -9,6 +9,7 @@ import com.my.exception.RemoveException;
 import com.my.vo.Board;
 import com.my.vo.BoardComment;
 import com.my.vo.Qa;
+import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
 
 import java.util.List;
 
@@ -51,10 +52,13 @@ public class BoardService {
     public void addBoardUp(String board_id, String user_id) throws AddException {
         dao.BoardUpInsert(board_id, user_id);
     }
-    public void removeBoardUp(String board_id) throws RemoveException{
-        dao.BoradUpDelete(board_id);
+    public void removeBoardUp(String board_id, String user_id) throws RemoveException{
+        dao.BoradUpDelete(board_id, user_id);
     }
     public List<Board> findByBoardTitle(String board_title) throws FindException {
         return dao.BoardByTitle(board_title);
+    }
+    public void findBoardUp(String user_id, String board_id) throws FindException{
+        dao.selectBoardUp(user_id, board_id);
     }
 }

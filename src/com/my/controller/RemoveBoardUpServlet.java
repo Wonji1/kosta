@@ -25,21 +25,15 @@ public class RemoveBoardUpServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("application/json; charset= utf-8");
-		PrintWriter out = response.getWriter();
-		Map<String, Object> jacksonMap = new HashMap<>();
-		ObjectMapper mapper = new ObjectMapper();
-		
+
 		String board_id = request.getParameter("board_id");
 		BoardService service = new BoardService();
-		
+
 		HttpSession session = request.getSession();
-		String logined_id = (String)session.getAttribute("loginInfo");
-		
-		User user = new User();
-		user.setUser_id(logined_id);
-		
+		String user_id = (String)session.getAttribute("loginInfo");
+
 		try {
-			service.removeBoardUp(board_id);
+			service.removeBoardUp(board_id, user_id);
 		} catch (RemoveException e) {
 			e.printStackTrace();
 		}
