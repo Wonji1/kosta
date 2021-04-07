@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8" />
     <title>KostaBank</title>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://use.fontawesome.com/releases/v5.2.0/js/all.js"></script>
     <link rel="shortcut icon" href="./images/logo.png">
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -167,7 +167,6 @@
 
         .board_list table {
             padding: 10px;
-            margin-top: 100px;
         }
 
         .board_list a {
@@ -256,7 +255,7 @@
             let $idBox = $(event.target);
             let board_id = $idBox.attr('id');
             sessionStorage.setItem("board_id", board_id);
-            $(".mainbox").load("./boarddetail.html");
+            location.href = "boarddetail.html";
         });
 
         //체크박스 : 글삭제 
@@ -278,6 +277,7 @@
             }
         });
         $(function () {
+            $('.header').load("headernmenu.html");
             $('.delbtn').click(function () {
                 if (confirm("삭제하시겠습니까?")) {
                     $.ajax({
@@ -318,9 +318,8 @@
                         tableObj += `<td>${data[i].board_subtitle}</td>`;
                         tableObj += `<td class="tit" id="${data[i].board_id}" title="${data[i].board_title}">${data[i].board_title}</td>`;
                         tableObj += `<td>${data[i].user_nickname}</td>`;
-                        tableObj += `<td>${data[i].board_wdate.substring(0, 16)}</td>`;
+                        tableObj += `<td>${data[i].board_wdate.substring(0, 10)}</td>`;
                         tableObj += `<td>${data[i].board_view}</td>`;
-                        tableObj += `<td>${data[i].board_up}</td>`;
                         $('#articles').html(tableObj);
 
                     }
@@ -386,9 +385,8 @@
                                 tableObj += `<td>${data[i].board_subtitle}</td>`;
                                 tableObj += `<td class="tit"  id="${data[i].board_id}" title="${data[i].board_title}">${data[i].board_title}</td>`;
                                 tableObj += `<td>${data[i].user_nickname}</td>`;
-                                tableObj += `<td>${data[i].board_wdate}</td>`;
+                                tableObj += `<td>${data[i].board_wdate.substring(0, 10)}</td>`;
                                 tableObj += `<td>${data[i].board_view}</td>`;
-                                tableObj += `<td>${data[i].board_up}</td>`;
                                 $('#articles').html(tableObj);
                             }
 
@@ -466,9 +464,8 @@
                             tableObj += `<td>${data[i].board_subtitle}</td>`;
                             tableObj += `<td class="tit"  id="${data[i].board_id}" title="${data[i].board_title}">${data[i].board_title}</td>`;
                             tableObj += `<td>${data[i].user_nickname}</td>`;
-                            tableObj += `<td>${data[i].board_wdate}</td>`;
+                            tableObj += `<td>${data[i].board_wdate.substring(0, 10)}</td>`;
                             tableObj += `<td>${data[i].board_view}</td>`;
-                            tableObj += `<td>${data[i].board_up}</td>`;
                             $('#articles').html(tableObj);
                         }
 
@@ -551,12 +548,11 @@
                         <col width="8%">
                         <col width="12%">
                         <col width="8%">
-                        <col width="8%">
                     </colgroup>
                     <thead>
                         <tr>
                             <th colspan="4" style="background-color: #ffffff; opacity: 0.2;"></th>
-                            <th colspan="2" style="background-color: rgba(255, 255, 255, 0.1);  border:none;">
+                            <th colspan="1" style="background-color: rgba(255, 255, 255, 0.1);  border:none;">
                                 <button class="postbtn" type="button" style="margin-left: 8px;
                             padding : 5px;
                             width: 130px;
@@ -589,7 +585,6 @@
                             <th scope="col">작성자</th>
                             <th scope="col">작성일</th>
                             <th scope="col">조회수</th>
-                            <th scope="col">좋아요</th>
                         </tr>
                     </thead>
                     <tbody id="articles">

@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <title>KostaBank</title>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="shortcut icon" href="./images/logo.png">
 
     <style>
@@ -176,7 +176,6 @@
 
                         $('.container2>div>input').click(function (event) {
                             let event_input = $(event.target);
-                            console.log(!event_input.prop("checked"));
                             if(!event_input.prop("checked")){
                                 event_input.prop("checked",false);
                                 test_mn_list.splice(test_mn_list.indexOf(event_input.attr('class')), 1);
@@ -191,12 +190,13 @@
                             $.ajax({
                                 url: './addmn',
                                 method: 'post',
-                                data: {"question_id_list": JSON.parse(sessionStorage.getItem("question_id_list"))},
+                                data: {"question_id_list": JSON.parse(sessionStorage.getItem("test_mn_list"))},
                                 traditional: true,// 이거 꼭 추가하기
                                 dataType: "text",
                                 success(data){
                                     sessionStorage.clear();
-                                    location.href = 'selection.html';
+                                    alert('마이노트에서 확인해보세요!');
+                                    location.href = 'randomorquestions.html';
                                 }
                             });
                         });

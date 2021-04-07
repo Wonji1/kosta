@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <title>KostaBank</title>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://use.fontawesome.com/releases/v5.2.0/js/all.js"></script>
     <link rel="shortcut icon" href="./images/logo.png">
     <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -312,7 +312,9 @@
                             $("div.user_id").html(element.user_nickname);
                             $("div.title").html(element.qa_title);
                             $("div.date").html(element.qa_wdate.substr(0, 10));
-                            $('.qa_image').html('<img class="qaimg" alt="qaimg" src="'+"./qaupload/" + element.qa_id + '_'+element.qa_file+'">');
+                            if(element.qa_file !== null) {
+                                $('.qa_image').html('<img class="qaimg" alt="qaimg" src="' + "./qaupload/" + element.qa_id + '_' + element.qa_file + '">');
+                            }
                             $('.qa_image').append('<div class="qa_content">'+element.qa_content+'<div>');
                         });
                         //등록버튼 이벤트
@@ -401,7 +403,7 @@
                             tableObj += `<td class="tit" title="${data[i].qa_title}">${data[i].qa_title}</td>`;
                             tableObj += `<td>${data[i].user_nickname}</td>`;
                             tableObj += `<td>${data[i].qa_wdate.substring(0, 10)}</td>`;
-                            tableObj += `<td>${data[i].qa_status == 0 ? "해결" : "미해결"}</td>`;
+                            tableObj += `<td>${data[i].qa_status == 2 ? "해결" : "미해결"}</td>`;
                             $('#articles').html(tableObj);
                         }
                         let str
@@ -466,7 +468,7 @@
                                     tableObj += `<td class="tit" title="${data[i].qa_title}">${data[i].qa_title}</td>`;
                                     tableObj += `<td>${data[i].user_nickname}</td>`;
                                     tableObj += `<td>${data[i].qa_wdate.substring(0, 10)}</td>`;
-                                    tableObj += `<td>${data[i].qa_status == 0 ? "해결" : "미해결"}</td>`;
+                                    tableObj += `<td>${data[i].qa_status == 2 ? "해결" : "미해결"}</td>`;
                                     $('#articles').html(tableObj);
                                 }
 
@@ -544,7 +546,7 @@
                                 tableObj += `<td class="tit" title="${data[i].qa_title}">${data[i].qa_title}</td>`;
                                 tableObj += `<td>${data[i].user_nickname}</td>`;
                                 tableObj += `<td>${data[i].qa_wdate.substring(0, 10)}</td>`;
-                                tableObj += `<td>${data[i].qa_status == 0 ? "해결" : "미해결"}</td>`;
+                                tableObj += `<td>${data[i].qa_status == 2 ? "해결" : "미해결"}</td>`;
                                 $('#articles').html(tableObj);
                             }
 

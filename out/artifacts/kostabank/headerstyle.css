@@ -39,7 +39,8 @@ body {
 
 .headernmenu .feedbackInfo {
     width: auto;
-    height: 130px;
+    min-height: 130px;
+    height: auto;
 }
 
 .headernmenu .login-Info {
